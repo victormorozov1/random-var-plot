@@ -17,7 +17,7 @@ class BaseFunction:
     def plot(self, x_start, x_end, accuracy=0.1):
         x, y = self.get_x_y_arrs(x_start, x_end, accuracy)
         plt.plot(x, y)
-        plt.show()
+        # plt.show()
 
 
 if __name__ == '__main__':
