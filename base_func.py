@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
+# Клас кажется слишком сложно для такой задачи. МОжно в функцю переделать
 class BaseFunction:
     def __init__(self, func):
         self.func = func
@@ -21,5 +21,5 @@ class BaseFunction:
 
 
 if __name__ == '__main__':
-    f = BaseFunction(lambda x: x ** 2)
+    f = BaseFunction(lambda x: 2 * x if 0 <= x < 2 else 6)
     f.plot(-10, 10, accuracy=0.1)
