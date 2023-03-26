@@ -7,6 +7,14 @@ from matplotlib import pyplot as plt
 from base_func import BaseFunction
 from math import log, ceil, floor
 
+import bisect
+from random import randrange, uniform
+
+import numpy as np
+from matplotlib import pyplot as plt
+
+from math import log, ceil, floor
+
 
 class RandomVariable:
     def __init__(self, min_random_value, max_random_value, density_func=None, distribution_func=None,
@@ -33,15 +41,16 @@ class RandomVariable:
 
         self.min_random_value, self.max_random_value = min_random_value, max_random_value
 
+    def count_all(self):
         # Можно все эти подсчеты сделать ленивыми
-        # if not self.ideal_density_func_defined():
-        #     self.count_statistics_density_func()
-        # self.max_density_value = self.get_max_density_value()
-        #
-        # if not self.ideal_distribution_func_defined():
-        #     self.count_statistics_distribution_func()
-        # if not self.ideal_random_variable_func_defined():
-        #     self.count_statistics_random_value_func()
+        if not self.ideal_density_func_defined():
+            self.count_statistics_density_func()
+        self.max_density_value = self.get_max_density_value()
+
+        if not self.ideal_distribution_func_defined():
+            self.count_statistics_distribution_func()
+        if not self.ideal_random_variable_func_defined():
+            self.count_statistics_random_value_func()
 
     def get_max_density_value(self, accuracy=0.01):  # Здесь потом можно использовать область определения
         maxx = 0
@@ -100,12 +109,11 @@ class RandomVariable:
 
         def f(x, d=0.1):
             derivative = (self.distribution_func(x + d / 2) - self.distribution_func(x - d / 2)) / d
-            if abs(derivative) > 2: # Костыль. Нужно бы нормально сделать
+            if abs(derivative) > 200:  # Костыль. Нужно бы нормально сделать
                 return 0
             return derivative
 
         self.__statistics_density_func = f
-
 
     def count_statistics_distribution_func(self, iterations=10 ** 6, accuracy=0.01):
         if self.ideal_distribution_func_defined():
@@ -127,16 +135,17 @@ class RandomVariable:
                 d[random_values[i]] += 1
 
         self.__distribution_func_values = sorted(d.items())
-
+        #         Почемут сюда я захожу 2 раза
         for i in range(len(self.__distribution_func_values)):
             self.__distribution_func_values[i] = list(self.__distribution_func_values[i])
-            if i > 1:
+            if i >= 1:
                 self.__distribution_func_values[i][1] = self.__distribution_func_values[i][1] / iterations + \
-                                                       self.__distribution_func_values[i - 1][1]
+                                                        self.__distribution_func_values[i - 1][1]
             else:
                 self.__distribution_func_values[i][1] = self.__distribution_func_values[i][1] / iterations
 
         def f(x):
+            # print(self.__distribution_func_values)
             x_arr = [i[0] for i in self.__distribution_func_values]
             y_arr = [i[0] for i in self.__distribution_func_values]
             x1_ind, x2_ind = bisect.bisect_left(x_arr, x), bisect.bisect_right(x_arr, x)
@@ -148,7 +157,7 @@ class RandomVariable:
             x2, y2 = x_arr[x2_ind], y_arr[x2_ind]
             if abs(x - x2) > 0.1:  # Написать бы нормально через accuracy
                 return self.__distribution_func_values[x1_ind][1]
-            if abs(x - x1) < abs(x - x2) :
+            if abs(x - x1) < abs(x - x2):
                 return self.__distribution_func_values[x1_ind][1]
             return self.__distribution_func_values[x2_ind][1]
 
@@ -204,7 +213,7 @@ class RandomVariable:
 if __name__ == '__main__':
     def rv():
         if randrange(0, 2) == 0:
-            return uniform(0, 1)
+            return 6
         return uniform(5, 7)
     r = RandomVariable(0, 7, random_variable_func=rv)
     r.count_statistics_distribution_func(iterations=10**4)
@@ -212,8 +221,8 @@ if __name__ == '__main__':
     # r.max_density_value = r.get_max_density_value(accuracy=10 ** -6)
     # r.count_statistics_distribution_func(iterations=10**3)
 
-    BaseFunction(r.distribution_func).plot(0, 8, accuracy=0.1)
-    BaseFunction(r.density_func).plot(0, 8, accuracy=0.1)
+    BaseFunction(r.distribution_func).plot(0, 8, accuracy=0.01)
+    BaseFunction(r.density_func).plot(0, 8, accuracy=0.01)
     # BaseFunction(r.distribution_func).plot(-5, 5, accuracy=0.1)
     plt.show()
     # print(sorted([r.random_variable_func() for i in range(1000)]))
