@@ -44,13 +44,13 @@ class RandomVariable:
 
     def count_all(self, distribution_iterations=10**5, distribution_accuracy=0.01, counting_density_max_accuracy=10**-4):
         # Можно все эти подсчеты сделать ленивыми
-        if not self.ideal_density_func_defined():
+        if not self.density_func_defined():
             self.count_statistics_density_func()
         self.max_density_value = self.get_max_density_value(accuracy=counting_density_max_accuracy)
 
-        if not self.ideal_distribution_func_defined():
+        if not self.distribution_func_defined():
             self.count_statistics_distribution_func(iterations=distribution_iterations, accuracy=distribution_accuracy)
-        if not self.ideal_random_variable_func_defined():
+        if not self.random_variable_func_defined():
             self.count_statistics_random_value_func()
 
     def get_max_density_value(self, accuracy=0.01):  # Здесь потом можно использовать область определения
@@ -70,13 +70,13 @@ class RandomVariable:
         return self.__ideal_random_variable_func is not None
 
     def statics_density_func_defined(self):
-        return self.__statistics_density_func_defined
+        return not self.__statistics_density_func is None
 
     def statics_distribution_func_defined(self):
-        return self.__statistics_distribution_func_defined
+        return not self.__statistics_distribution_func is None
 
     def statics_random_variable_func_defined(self):
-        return self.__statistics_random_variable_func_defined
+        return not self.__statistics_random_variable_func is None
 
     def density_func_defined(self):
         return self.statics_density_func_defined() or self.ideal_density_func_defined()
