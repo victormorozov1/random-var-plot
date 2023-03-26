@@ -1,4 +1,5 @@
 import bisect
+from importlib.metadata import distribution
 from random import randrange, uniform
 
 import numpy as np
@@ -41,14 +42,14 @@ class RandomVariable:
 
         self.min_random_value, self.max_random_value = min_random_value, max_random_value
 
-    def count_all(self):
+    def count_all(self, distribution_iterations=10**5, distribution_accuracy=0.01, counting_density_max_accuracy=10**-4):
         # Можно все эти подсчеты сделать ленивыми
         if not self.ideal_density_func_defined():
             self.count_statistics_density_func()
-        self.max_density_value = self.get_max_density_value()
+        self.max_density_value = self.get_max_density_value(accuracy=counting_density_max_accuracy)
 
         if not self.ideal_distribution_func_defined():
-            self.count_statistics_distribution_func()
+            self.count_statistics_distribution_func(iterations=distribution_iterations, accuracy=distribution_accuracy)
         if not self.ideal_random_variable_func_defined():
             self.count_statistics_random_value_func()
 
@@ -216,10 +217,7 @@ if __name__ == '__main__':
             return 6
         return uniform(5, 7)
     r = RandomVariable(0, 7, random_variable_func=rv)
-    r.count_statistics_distribution_func(iterations=10**4)
-    r.count_statistics_density_func()
-    # r.max_density_value = r.get_max_density_value(accuracy=10 ** -6)
-    # r.count_statistics_distribution_func(iterations=10**3)
+    r.count_all(distribution_accuracy=0.1, distribution_iterations=10 ** 4, counting_density_max_accuracy=0.01)
 
     BaseFunction(r.distribution_func).plot(0, 8, accuracy=0.01)
     BaseFunction(r.density_func).plot(0, 8, accuracy=0.01)
