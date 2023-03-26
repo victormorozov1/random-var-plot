@@ -21,12 +21,12 @@ class RandomVariable:
     def __init__(self, min_random_value, max_random_value, density_func=None, distribution_func=None,
                  random_variable_func=None):
         # добавить область где вероятность меняется
-        self.__distribution_func_values = None
+        self.__ideal_distribution_func_values = None
 
         self.max_density_value = 0
         self.__ideal_density_func = density_func
-        self.__distribution_func = distribution_func
-        self.__random_variable_func = random_variable_func
+        self.__ideal_distribution_func = distribution_func
+        self.__ideal_random_variable_func = random_variable_func
 
         if density_func is None and distribution_func is None and random_variable_func is None:
             raise ValueError(
@@ -64,10 +64,10 @@ class RandomVariable:
         return self.__ideal_density_func is not None
 
     def ideal_distribution_func_defined(self):
-        return self.__distribution_func is not None
+        return self.__ideal_distribution_func is not None
 
     def ideal_random_variable_func_defined(self):
-        return self.__random_variable_func is not None
+        return self.__ideal_random_variable_func is not None
 
     def statics_density_func_defined(self):
         return self.__statistics_density_func_defined
@@ -94,12 +94,12 @@ class RandomVariable:
 
     def distribution_func(self, x):
         if self.ideal_distribution_func_defined():
-            return self.__distribution_func(x)
+            return self.__ideal_distribution_func(x)
         return self.__statistics_distribution_func(x)
 
     def random_variable_func(self):
         if self.ideal_random_variable_func_defined():
-            return self.__random_variable_func()
+            return self.__ideal_random_variable_func()
         return self.__statistics_random_variable_func()
 
     def count_statistics_density_func(self):
@@ -135,20 +135,20 @@ class RandomVariable:
             else:
                 d[random_values[i]] += 1
 
-        self.__distribution_func_values = sorted(d.items())
+        self.__ideal_distribution_func_values = sorted(d.items())
         #         Почемут сюда я захожу 2 раза
-        for i in range(len(self.__distribution_func_values)):
-            self.__distribution_func_values[i] = list(self.__distribution_func_values[i])
+        for i in range(len(self.__ideal_distribution_func_values)):
+            self.__ideal_distribution_func_values[i] = list(self.__ideal_distribution_func_values[i])
             if i >= 1:
-                self.__distribution_func_values[i][1] = self.__distribution_func_values[i][1] / iterations + \
-                                                        self.__distribution_func_values[i - 1][1]
+                self.__ideal_distribution_func_values[i][1] = self.__ideal_distribution_func_values[i][1] / iterations + \
+                                                        self.__ideal_distribution_func_values[i - 1][1]
             else:
-                self.__distribution_func_values[i][1] = self.__distribution_func_values[i][1] / iterations
+                self.__ideal_distribution_func_values[i][1] = self.__ideal_distribution_func_values[i][1] / iterations
 
         def f(x):
-            # print(self.__distribution_func_values)
-            x_arr = [i[0] for i in self.__distribution_func_values]
-            y_arr = [i[0] for i in self.__distribution_func_values]
+            # print(self.__ideal_distribution_func_values)
+            x_arr = [i[0] for i in self.__ideal_distribution_func_values]
+            y_arr = [i[0] for i in self.__ideal_distribution_func_values]
             x1_ind, x2_ind = bisect.bisect_left(x_arr, x), bisect.bisect_right(x_arr, x)
             if x1_ind >= len(x_arr):
                 x1_ind = len(x_arr) - 1
@@ -157,10 +157,10 @@ class RandomVariable:
             x1, y1 = x_arr[x1_ind], y_arr[x1_ind]
             x2, y2 = x_arr[x2_ind], y_arr[x2_ind]
             if abs(x - x2) > 0.1:  # Написать бы нормально через accuracy
-                return self.__distribution_func_values[x1_ind][1]
+                return self.__ideal_distribution_func_values[x1_ind][1]
             if abs(x - x1) < abs(x - x2):
-                return self.__distribution_func_values[x1_ind][1]
-            return self.__distribution_func_values[x2_ind][1]
+                return self.__ideal_distribution_func_values[x1_ind][1]
+            return self.__ideal_distribution_func_values[x2_ind][1]
 
         self.__statistics_distribution_func = f
 
@@ -187,12 +187,12 @@ class RandomVariable:
 
     def ideal_distribution_func(self, x):
         if self.ideal_distribution_func_defined():
-            return self.__distribution_func(x)
+            return self.__ideal_distribution_func(x)
         raise ValueError("No distribution function defined.")
 
     def ideal_random_variable_func(self):
         if self.ideal_random_variable_func_defined():
-            return self.__random_variable_func()
+            return self.__ideal_random_variable_func()
         raise ValueError("No random variable function defined.")
 
     def statics_density_func(self, x):
@@ -217,7 +217,7 @@ if __name__ == '__main__':
             return 6
         return uniform(5, 7)
     r = RandomVariable(0, 7, random_variable_func=rv)
-    r.count_all(distribution_accuracy=0.1, distribution_iterations=10 ** 4, counting_density_max_accuracy=0.01)
+    r.count_all(distribution_accuracy=0.1, distribution_iterations=10 ** 2, counting_density_max_accuracy=0.01)
 
     BaseFunction(r.distribution_func).plot(0, 8, accuracy=0.01)
     BaseFunction(r.density_func).plot(0, 8, accuracy=0.01)
