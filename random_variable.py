@@ -42,7 +42,8 @@ class RandomVariable:
 
         self.min_random_value, self.max_random_value = min_random_value, max_random_value
 
-    def count_all(self, distribution_iterations=10**5, distribution_accuracy=0.01, counting_density_max_accuracy=10**-4):
+    def count_all(self, distribution_iterations=10 ** 5, distribution_accuracy=0.01,
+                  counting_density_max_accuracy=10 ** -4):
         # Можно все эти подсчеты сделать ленивыми
         if not self.density_func_defined():
             self.count_statistics_density_func()
@@ -136,31 +137,30 @@ class RandomVariable:
                 d[random_values[i]] += 1
 
         self.__ideal_distribution_func_values = sorted(d.items())
-        #         Почемут сюда я захожу 2 раза
+
         for i in range(len(self.__ideal_distribution_func_values)):
             self.__ideal_distribution_func_values[i] = list(self.__ideal_distribution_func_values[i])
             if i >= 1:
                 self.__ideal_distribution_func_values[i][1] = self.__ideal_distribution_func_values[i][1] / iterations + \
-                                                        self.__ideal_distribution_func_values[i - 1][1]
+                                                              self.__ideal_distribution_func_values[i - 1][1]
             else:
                 self.__ideal_distribution_func_values[i][1] = self.__ideal_distribution_func_values[i][1] / iterations
 
         def f(x):
             # print(self.__ideal_distribution_func_values)
             x_arr = [i[0] for i in self.__ideal_distribution_func_values]
-            y_arr = [i[0] for i in self.__ideal_distribution_func_values]
-            x1_ind, x2_ind = bisect.bisect_left(x_arr, x), bisect.bisect_right(x_arr, x)
-            if x1_ind >= len(x_arr):
-                x1_ind = len(x_arr) - 1
-            if x2_ind >= len(x_arr):
-                x2_ind = len(x_arr) - 1
-            x1, y1 = x_arr[x1_ind], y_arr[x1_ind]
-            x2, y2 = x_arr[x2_ind], y_arr[x2_ind]
-            if abs(x - x2) > 0.1:  # Написать бы нормально через accuracy
-                return self.__ideal_distribution_func_values[x1_ind][1]
-            if abs(x - x1) < abs(x - x2):
-                return self.__ideal_distribution_func_values[x1_ind][1]
-            return self.__ideal_distribution_func_values[x2_ind][1]
+            y_arr = [i[1] for i in self.__ideal_distribution_func_values]
+            # print(x_arr, y_arr)
+            if x < x_arr[0]:
+                return 0
+            if x > x_arr[-1]:
+                return 1
+
+            ind = bisect.bisect_left(x_arr, x)
+            x_val = x_arr[ind]
+            if x >= x_val:
+                return y_arr[ind]
+            return y_arr[ind - 1]
 
         self.__statistics_distribution_func = f
 
