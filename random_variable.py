@@ -1,20 +1,10 @@
-import bisect
-from importlib.metadata import distribution
-from random import randrange, uniform
-
-import numpy as np
-from matplotlib import pyplot as plt
-
 from base_func import BaseFunction
-from math import log, ceil, floor
 
 import bisect
 from random import randrange, uniform
 
 import numpy as np
 from matplotlib import pyplot as plt
-
-from math import log, ceil, floor
 
 
 class RandomVariable:
@@ -213,14 +203,17 @@ class RandomVariable:
 
 if __name__ == '__main__':
     def rv():
-        if randrange(0, 2) == 0:
-            return 6
-        return uniform(5, 7)
-    r = RandomVariable(0, 7, random_variable_func=rv)
-    r.count_all(distribution_accuracy=0.1, distribution_iterations=10 ** 2, counting_density_max_accuracy=0.01)
+        if randrange(0, 2) == 0:  # Случайная переменная
+            return uniform(0, 4) / 2
+        return uniform(0, 2)
 
-    BaseFunction(r.distribution_func).plot(0, 8, accuracy=0.01)
-    BaseFunction(r.density_func).plot(0, 8, accuracy=0.01)
-    # BaseFunction(r.distribution_func).plot(-5, 5, accuracy=0.1)
+
+    r = RandomVariable(0, 7, random_variable_func=rv)
+    r.count_all(distribution_accuracy=0.1, distribution_iterations=10 ** 2,
+                counting_density_max_accuracy=0.01)
+
+    BaseFunction(r.distribution_func).plot(0, 3,
+                                           accuracy=0.001)  # Строим функцию распределения
+    BaseFunction(r.density_func).plot(0, 3,
+                                      accuracy=0.001)  # Строим функцию плотности
     plt.show()
-    # print(sorted([r.random_variable_func() for i in range(1000)]))
