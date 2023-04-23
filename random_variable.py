@@ -204,8 +204,9 @@ class RandomVariable:
 if __name__ == '__main__':
     def rv():
         if randrange(0, 2) == 0:  # Случайная переменная
-            return uniform(0, 2) / 2
+            return uniform(0, 1)
         return uniform(0, 2)
+
 
     r = RandomVariable(0, 7, random_variable_func=rv)
     r.count_all(distribution_accuracy=0.1, distribution_iterations=10 ** 2,
