@@ -6,7 +6,7 @@
 ```python
 def rv():
     if randrange(0, 2) == 0:  # Случайная переменная
-        return uniform(0, 4) / 2
+        return uniform(0, 1)
     return uniform(0, 2)
     
 r = RandomVariable(0, 7, random_variable_func=rv)
