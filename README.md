@@ -17,4 +17,4 @@ BaseFunction(r.density_func).plot(0, 3, accuracy=0.001)  # Строим функ
 plt.show()
 ```
 
-![image](https://user-images.githubusercontent.com/33213745/233858419-b4e7ec3e-372e-454b-a94a-3a72ea66ec3c.png)
+![image](https://github.com/victormorozov1/random-var-plot/blob/master/example.png)
